@@ -1,8 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Body, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Role, User } from '@prisma/client';
+import { CreateInviteDto } from './dto/create-invite.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +16,7 @@ export class UsersService {
     if (data.role && !validRoles.includes(data.role)) {
       throw new BadRequestException(`Invalid role: ${data.role}`);
     }
-    const hashedPassword = await this.hashPassword(data.password);
+    const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const newUser = {
       ...data,
@@ -31,7 +33,15 @@ export class UsersService {
     });
   }
 
-  async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, 10);
+  async createInvite(@Body() dto: CreateInviteDto) {
+    const invite = await this.prisma.invitation.create({
+      data: {
+        code: uuidv4(),
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
+        createdById: dto.adminId,
+      },
+    });
+
+    return invite;
   }
 }

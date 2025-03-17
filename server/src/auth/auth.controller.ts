@@ -28,7 +28,7 @@ export class AuthController {
     return this.authService.registerByInvite(dto);
   }
 
-  // @UseGuards(AuthGuard, AdminGuard)
+  @UseGuards(AuthGuard, AdminGuard)
   @Post('register/byAdmin')
   @HttpCode(HttpStatus.CREATED)
   async registerByAdmin(@Body() dto: SignUpByAdminDto) {

@@ -6,6 +6,6 @@ export class CreateUserDto {
   firstname: string;
   lastname: string;
   middlename?: string;
-  managerId?: string;
+  managerId?: number;
   role?: Role;
 }
