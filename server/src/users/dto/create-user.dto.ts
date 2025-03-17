@@ -1,3 +1,5 @@
+import { Role } from '@prisma/client';
+
 export class CreateUserDto {
   login: string;
   password: string;
@@ -5,4 +7,5 @@ export class CreateUserDto {
   lastname: string;
   middlename?: string;
   managerId?: string;
+  role?: Role;
 }
