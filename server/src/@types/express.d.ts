@@ -1,7 +1,8 @@
-import { User } from '@prisma/client';
+import { JwtPayloadType } from '@/auth/types';
 
 declare module 'express' {
   interface Request {
-    user?: User;
+    user?: JwtPayloadType;
+    cookies?: Record<string, string>;
   }
 }

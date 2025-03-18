@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from '@/prisma/prisma.service';
 import { SignUpByAdminDto, SignUpByInviteDto } from '@/auth/dto/sign-up.dto';
 import { User } from '@prisma/client';
+import { JwtPayloadType } from './types';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +35,7 @@ export class AuthService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userData } = user;
 
-    const payload = { sub: user.id };
+    const payload = { sub: user.id, login: user.login, role: user.role };
 
     const accessToken = await this.jwtService.signAsync(payload, {
       expiresIn: '15m',
@@ -48,6 +49,24 @@ export class AuthService {
       access_token: accessToken,
       refresh_token: refreshToken,
       user: userData,
+    };
+  }
+
+  async refreshToken(refreshToken: string) {
+    const payload = this.jwtService.verify<JwtPayloadType>(refreshToken);
+
+    const user = await this.usersService.findById(payload.sub);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return {
+      access_token: this.jwtService.sign({
+        sub: user.id,
+        login: user.login,
+        role: user.role,
+      }),
     };
   }
 

@@ -33,6 +33,23 @@ export class UsersService {
     });
   }
 
+  async findById(id: number): Promise<Omit<User, 'password'> | null> {
+    return this.prisma.user.findUnique({
+      where: { id: id },
+      select: {
+        id: true,
+        login: true,
+        firstname: true,
+        lastname: true,
+        middlename: true,
+        role: true,
+        managerId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
   async createInvite(@Body() dto: CreateInviteDto) {
     const invite = await this.prisma.invitation.create({
       data: {

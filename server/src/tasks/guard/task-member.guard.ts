@@ -37,7 +37,7 @@ export class TaskMemberGuard implements CanActivate {
       return true;
     }
 
-    if (task.creatorId !== user.id || task.executorId !== user.id) {
+    if (task.creatorId !== user.sub || task.executorId !== user.sub) {
       throw new ForbiddenException('Недостаточно прав');
     }
 

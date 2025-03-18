@@ -37,7 +37,7 @@ export class TaskCreatorGuard implements CanActivate {
       return true;
     }
 
-    if (task.creatorId !== user.id) {
+    if (task.creatorId !== user.sub) {
       throw new ForbiddenException('Недостаточно прав');
     }
 

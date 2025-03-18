@@ -1,3 +1,7 @@
-import { User } from '@prisma/client';
+import { Role } from '@prisma/client';
 
-export type JwtPayloadType = Omit<User, 'password'>;
+export interface JwtPayloadType {
+  sub: number;
+  login: string;
+  role: Role;
+}
