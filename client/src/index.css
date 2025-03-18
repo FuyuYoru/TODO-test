@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Tactic Sans';
+    src: url('/src/fonts/TacticSans-Reg.woff2') format('woff2'),
+        url('/src/fonts/TacticSans-Reg.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Tactic Sans';
+    src: url('/src/fonts/TacticSans-Bld.woff2') format('woff2'),
+        url('/src/fonts/TacticSans-Bld.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('/src/fonts/Inter-Regular.woff2') format('woff2'),
+        url('/src/fonts/Inter-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark {
+    background-color: #06080C;
+    color: #ffffff;
+}
+
+.light {
+    background-color: #ffffff;
+    color: #000000;
+}

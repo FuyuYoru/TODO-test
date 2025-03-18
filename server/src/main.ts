@@ -8,6 +8,7 @@ async function bootstrap() {
     AppModule,
     // new FastifyAdapter(),
   );
+  app.setGlobalPrefix('api');
   await app.listen(process.env.PORT ?? 3000);
   const serverUrl = await app.getUrl();
   console.log(`Сервер запущен на: ${serverUrl}`);

@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '@/prisma/prisma.service';
 import { SignUpByAdminDto, SignUpByInviteDto } from '@/auth/dto/sign-up.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,14 @@ export class AuthService {
     private prisma: PrismaService,
   ) {}
 
-  async signIn(login: string, pass: string): Promise<{ access_token: string }> {
+  async signIn(
+    login: string,
+    pass: string,
+  ): Promise<{
+    access_token: string;
+    refresh_token: string;
+    user: Omit<User, 'password'>;
+  }> {
     const user = await this.usersService.findByLogin(login);
     if (!user || !(await bcrypt.compare(pass, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
@@ -25,8 +33,22 @@ export class AuthService {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userData } = user;
-    const payload = { ...userData };
-    return { access_token: await this.jwtService.signAsync(payload) };
+
+    const payload = { sub: user.id };
+
+    const accessToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '15m',
+    });
+
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '7d',
+    });
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      user: userData,
+    };
   }
 
   async registerByInvite(data: SignUpByInviteDto) {
