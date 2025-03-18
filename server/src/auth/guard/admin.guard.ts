@@ -6,15 +6,14 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
-import { FastifyRequest } from 'fastify';
+import { Request } from 'express';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const request: FastifyRequest = context.switchToHttp().getRequest();
-
+    const request = context.switchToHttp().getRequest<Request>();
     const user = request.user;
 
     if (!user || user.role !== Role.ADMIN) {
