@@ -41,8 +41,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         } catch (error) {
           if (!isCancelled) {
             console.error(error);
-            setIsAuthenticated(false);
-            localStorage.removeItem("accessToken");
+            signOut()
           }
         }
 
