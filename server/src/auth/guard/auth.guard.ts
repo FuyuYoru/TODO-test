@@ -15,8 +15,7 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
-    const cookies: Record<string, string> = request.cookies;
-    const token = cookies?.refreshToken;
+    const token = this.extractAccessToken(request);
 
     if (!token) {
       throw new UnauthorizedException('Вы не авторизованы');
@@ -29,5 +28,20 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Вы не авторизованы');
     }
     return true;
+  }
+
+  private extractAccessToken(request: Request): string | null {
+    if (process.env.NODE_ENV === 'production') {
+      const cookies: Record<string, string> = request.cookies;
+      const token = cookies?.accessToken || null;
+      return token;
+    }
+
+    const authHeader = request.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) {
+      return authHeader.split(' ')[1];
+    }
+
+    return null;
   }
 }

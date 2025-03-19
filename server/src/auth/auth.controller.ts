@@ -8,7 +8,6 @@ import {
   Response,
   UnauthorizedException,
   Req,
-  Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
@@ -16,6 +15,7 @@ import { SignUpByAdminDto, SignUpByInviteDto } from '@/auth/dto/sign-up.dto';
 import { AuthGuard } from '@/auth/guard/auth.guard';
 import { AdminGuard } from '@/auth/guard/admin.guard';
 import { Response as ExpressResponse, Request } from 'express';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -43,14 +43,17 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.json({ access_token, user });
+    return res.json({ access_token, refresh_token, user });
   }
 
   @UseGuards(AuthGuard)
-  @Get('refreshToken')
-  async refreshToken(@Req() req: Request, @Response() res: ExpressResponse) {
-    const cookies: Record<string, string> = req.cookies;
-    const refreshToken = cookies?.refreshToken;
+  @Post('refreshToken')
+  async refreshToken(
+    @Body() dto: RefreshTokenDto,
+    @Req() req: Request,
+    @Response() res: ExpressResponse,
+  ) {
+    const refreshToken = this.extractToken(req, dto);
 
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token не найден');
@@ -79,5 +82,16 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async registerByAdmin(@Body() dto: SignUpByAdminDto) {
     return this.authService.registerByAdmin(dto);
+  }
+
+  private extractToken(req: Request, dto: RefreshTokenDto): string | null {
+    if (process.env.NODE_ENV === 'development') {
+      return dto.refreshToken || null;
+    }
+
+    const cookies: Record<string, string> = req.cookies;
+    const token = cookies?.refreshToken || null;
+
+    return token;
   }
 }
