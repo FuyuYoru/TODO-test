@@ -3,6 +3,7 @@ import { baseUrl, ApiPaths } from "@/shared/api/apiPaths";
 
 type LoginResponse = {
   access_token: string;
+  refresh_token: string;
   user: User;
 };
 

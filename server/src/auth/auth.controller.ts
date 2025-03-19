@@ -46,7 +46,7 @@ export class AuthController {
     return res.json({ access_token, refresh_token, user });
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Post('refreshToken')
   async refreshToken(
     @Body() dto: RefreshTokenDto,

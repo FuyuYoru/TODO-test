@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         } catch (error) {
           if (!isCancelled) {
             console.error(error);
-            signOut()
+            signOut();
           }
         }
 
@@ -60,6 +60,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       console.log(response);
 
       localStorage.setItem("accessToken", response.access_token);
+      localStorage.setItem("refreshToken", response.refresh_token);
       setIsAuthenticated(true);
 
       const user = await getCurrent();
@@ -72,6 +73,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const signOut = useCallback(() => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     setUser(null);
     setIsAuthenticated(false);
   }, []);
