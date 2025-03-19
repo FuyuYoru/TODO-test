@@ -3,5 +3,5 @@ import { useAuth } from "../providers/AuthProvider";
 
 export const PublicRoute: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  return !isAuthenticated ? <Outlet /> : <Navigate to="/home" />;
+  return !isAuthenticated ? <Outlet /> : <Navigate to="/tasks" />;
 };

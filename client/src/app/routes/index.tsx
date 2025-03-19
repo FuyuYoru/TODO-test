@@ -10,6 +10,7 @@ import { LoginPage } from "@/pages/login";
 import { RegisterPage } from "@/pages/register";
 import { HomePage } from "@/pages/home";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { MainLayout } from "@/widgets/layouts/MainLayout";
 
 export const AppRouter = () => {
   return (
@@ -22,10 +23,12 @@ export const AppRouter = () => {
             <Route path="*" element={<Navigate to="/login" />} />
           </Route>
           <Route element={<ProtectedRoute />}>
-            <Route path="/home" element={<HomePage />} />
+            <Route element={<MainLayout />}>
+              <Route path="/tasks" element={<HomePage />} />
+            </Route>
           </Route>
         </Route>
-        <Route path="*" element={<Navigate to="/home" />} />
+        <Route path="*" element={<Navigate to="/tasks" />} />
       </Routes>
     </Router>
   );
