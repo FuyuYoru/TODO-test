@@ -12,6 +12,7 @@ const apiPaths = {
   //tasks
   createTask: "/tasks/",
   getTask: "/tasks/:id",
+  getTaskList: "/tasks/list",
   updateTask: "/tasks/:id",
   deleteTask: "/tasks/:id",
 };
@@ -30,11 +31,16 @@ export class ApiPaths {
     return apiPaths.getCurrent;
   }
 
+
+  //Tasks
   static createTask() {
     return apiPaths.createTask;
   }
   static getTask(id: number) {
     return this.formatPath(apiPaths.getTask, id);
+  }
+  static getTasksList() {
+    return apiPaths.getTaskList;
   }
   static updateTask(id: number) {
     return this.formatPath(apiPaths.updateTask, id);

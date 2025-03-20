@@ -1,6 +1,6 @@
 import { Input } from "@/shared/ui/Input";
 import { Eye } from "lucide-react";
-import { boolean, z } from "zod";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";

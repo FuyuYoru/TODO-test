@@ -27,6 +27,7 @@ export class AuthGuard implements CanActivate {
     } catch {
       throw new UnauthorizedException('Вы не авторизованы');
     }
+    console.log('ГУАРД ПРОЙДЕН');
     return true;
   }
 

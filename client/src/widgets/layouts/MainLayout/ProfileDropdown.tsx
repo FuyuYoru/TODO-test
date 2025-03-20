@@ -66,7 +66,7 @@ export const ProfileDropdown: React.FC = () => {
           </div>
         }
         onClick={handleOpen}
-        classNames="gap-2"
+        classNames="gap-2 text-lg"
         ref={buttonRef}
       >
         {user?.firstname + " " + user?.lastname}

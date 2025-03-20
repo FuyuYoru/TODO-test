@@ -8,7 +8,7 @@ import { Providers } from "../providers";
 import { PublicRoute } from "./PublicRoute";
 import { LoginPage } from "@/pages/login";
 import { RegisterPage } from "@/pages/register";
-import { HomePage } from "@/pages/home";
+import { TaskPage } from "@/pages/tasks";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { MainLayout } from "@/widgets/layouts/MainLayout";
 
@@ -24,7 +24,7 @@ export const AppRouter = () => {
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
-              <Route path="/tasks" element={<HomePage />} />
+              <Route path="/tasks" element={<TaskPage />} />
             </Route>
           </Route>
         </Route>
