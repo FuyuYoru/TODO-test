@@ -35,11 +35,11 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center">
-      <div className="w-full max-w-[500px] max-h-[50%] dark:bg-white p-6 rounded-lg shadow-lg">
-        <div className="dark:text-black flex flex-col w-full gap-2">
+    <div className="flex h-screen w-full items-center justify-center">
+      <div className="max-h-[50%] w-full max-w-[500px] rounded-lg p-6 shadow-lg dark:bg-white">
+        <div className="flex w-full flex-col gap-2 dark:text-black">
           <p className="text-lg font-semibold">Авторизация</p>
-          <div className="my-4 w-full h-[1px] bg-[#dad8d8]"></div>
+          <div className="my-4 h-[1px] w-full bg-[#dad8d8]"></div>
 
           <form
             onSubmit={handleSubmit(onSubmit)}
@@ -48,7 +48,7 @@ export const LoginPage: React.FC = () => {
             <div>
               <Input placeholder="Логин" type="text" {...register("login")} />
               {errors.login && (
-                <p className="text-red-500 text-sm">{errors.login.message}</p>
+                <p className="text-sm text-red-500">{errors.login.message}</p>
               )}
             </div>
 
@@ -66,7 +66,7 @@ export const LoginPage: React.FC = () => {
                 iconAction={toggleVisible}
               />
               {errors.password && (
-                <p className="text-red-500 text-sm">
+                <p className="text-sm text-red-500">
                   {errors.password.message}
                 </p>
               )}
@@ -74,7 +74,7 @@ export const LoginPage: React.FC = () => {
 
             <button
               type="submit"
-              className="mt-4 w-full bg-[#c20840] text-white py-2 rounded-lg hover:bg-[#940740] transition"
+              className="mt-4 w-full rounded-lg bg-[#c20840] py-2 text-white transition hover:bg-[#940740]"
             >
               Войти
             </button>

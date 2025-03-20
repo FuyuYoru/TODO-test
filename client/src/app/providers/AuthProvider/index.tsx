@@ -24,7 +24,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
 
@@ -35,6 +34,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         try {
           const user = await getCurrent();
           if (!isCancelled && user) {
+            console.log(user);
             setUser(user);
             setIsAuthenticated(true);
           }

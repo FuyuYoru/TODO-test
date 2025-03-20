@@ -25,7 +25,7 @@ export const Button = forwardRef<HTMLDivElement, Props>(
       >
         <button
           {...props}
-          className="bg-transparent focus:outline-none focus:ring-0 border-0"
+          className="border-0 bg-transparent focus:outline-none focus:ring-0"
         >
           {children}
         </button>

@@ -15,8 +15,8 @@ const DropdownItem = ({
   onClick: () => void;
 }) => (
   <div
-    className="text-white text-sm w-full text-center transition-all duration-300 
-      hover:bg-[#1f1f1f] cursor-pointer p-2"
+    className="w-full cursor-pointer p-2 text-center text-sm text-white 
+      transition-all duration-300 hover:bg-[#1f1f1f]"
     onClick={onClick}
   >
     {title}
@@ -75,10 +75,10 @@ export const ProfileDropdown: React.FC = () => {
       <div
         ref={dropdownRef}
         className={clsx(
-          "absolute top-full left-0 mt-1 w-full bg-[#181818] border border-[#2b2b2b] rounded-md p-[1px] shadow-lg transform transition-all duration-300",
+          "absolute left-0 top-full mt-1 w-full transform rounded-md border border-[#2b2b2b] bg-[#181818] p-[1px] shadow-lg transition-all duration-300",
           isOpened
-            ? "opacity-100 scale-100"
-            : "opacity-0 scale-95 pointer-events-none"
+            ? "scale-100 opacity-100"
+            : "pointer-events-none scale-95 opacity-0"
         )}
       >
         {userActions.map((item) => (
