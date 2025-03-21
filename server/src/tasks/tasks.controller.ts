@@ -10,7 +10,6 @@ import {
   Put,
   UseGuards,
   ParseIntPipe,
-  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -43,7 +42,6 @@ export class TasksController {
   @UsePipes(new ValidationPipe({ transform: true }))
   @HttpCode(HttpStatus.OK)
   async getTasks(@Body() dto: GetTasksDto) {
-    console.log(dto);
     const result = await this.tasksService.getTasks(dto);
     return { result: result };
   }

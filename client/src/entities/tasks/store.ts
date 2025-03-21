@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import { Task, TaskFilter, TaskStatus } from "./model/task";
+import { Task, TaskFilter } from "./model/task";
 import { getTasksByFilter } from "./api/getTasksByFilter";
 import { updateTask } from "./api/updateTask";
+import { createTask } from "@/entities/tasks/api/createTask";
 
 type State = {
   tasks: Task[];
@@ -9,7 +10,7 @@ type State = {
 
 type Actions = {
   loadTasks: (filter: TaskFilter) => void;
-  changeStatus: (taskId: number, newStatus: TaskStatus) => void;
+  changeTask: (taskId: number, data: Partial<Task>) => void;
   createTask: (
     data: Required<
       Pick<Task, "header" | "description" | "creatorId" | "status">
@@ -25,12 +26,8 @@ export const useTasksStore = create<State & Actions>((set, get) => ({
     set({
       tasks: tasks,
     });
-    console.log(tasks);
   },
-  async changeStatus(taskId, newStatus) {
-    const taskData = {
-      status: newStatus,
-    };
+  async changeTask(taskId, taskData) {
     const updatedTask = await updateTask(taskId, taskData);
     const newTasks = [
       ...get().tasks.filter((item) => item.id !== taskId),
@@ -40,7 +37,13 @@ export const useTasksStore = create<State & Actions>((set, get) => ({
       tasks: newTasks,
     });
   },
-  createTask(data) {
-    console.log(data);
+  async createTask(data) {
+    const newTask = await createTask(data);
+    console.log(newTask);
+    if(newTask) {
+      set({
+        tasks: [...get().tasks, newTask],
+      });
+    }
   },
 }));

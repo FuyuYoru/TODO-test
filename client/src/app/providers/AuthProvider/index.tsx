@@ -13,7 +13,7 @@ import {
 type AuthContextType = {
   isAuthenticated: boolean;
   user: User | null;
-  signIn: (login: string, password: string) => Promise<void>;
+  signIn: (login: string, password: string) => Promise<string | null>;
   signOut: () => void;
 };
 
@@ -24,6 +24,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
 
@@ -34,7 +36,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         try {
           const user = await getCurrent();
           if (!isCancelled && user) {
-            console.log(user);
             setUser(user);
             setIsAuthenticated(true);
           }
@@ -57,7 +58,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const signIn = useCallback(async (login: string, password: string) => {
     try {
       const response = await loginRequest(login, password);
-      console.log(response);
 
       localStorage.setItem("accessToken", response.access_token);
       localStorage.setItem("refreshToken", response.refresh_token);
@@ -65,9 +65,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
       const user = await getCurrent();
       setUser(user);
-    } catch {
+      setAuthError(null);
+      return null;
+    } catch (error) {
       setIsAuthenticated(false);
-      throw new Error("Неправильный логин или пароль");
+      setAuthError("Неверный логин или пароль");
+      return "Неверный логин или пароль";
     }
   }, []);
 

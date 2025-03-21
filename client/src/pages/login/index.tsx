@@ -15,6 +15,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export const LoginPage: React.FC = () => {
   const [passVisible, setPassVisible] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { signIn } = useAuth();
 
@@ -31,7 +32,10 @@ export const LoginPage: React.FC = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    await signIn(data.login, data.password);
+    const error = await signIn(data.login, data.password);
+    if (error) {
+      setErrorMessage(error);
+    }
   };
 
   return (
@@ -71,6 +75,10 @@ export const LoginPage: React.FC = () => {
                 </p>
               )}
             </div>
+
+            {errorMessage && (
+              <p className="text-sm text-red-500">{errorMessage}</p>
+            )}
 
             <button
               type="submit"

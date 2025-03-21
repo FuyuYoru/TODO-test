@@ -1,4 +1,6 @@
+import { useModal } from "@/features/modal/store";
 import { Task } from "../model/task";
+import { useCallback } from "react";
 
 interface TaskCardProps {
   item: Task;
@@ -14,6 +16,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const expiresAtDate = item.expiresAt ? new Date(item.expiresAt) : null;
   const isExpired = expiresAtDate && expiresAtDate < new Date();
 
+  const {onOpen} = useModal();
+
+  const openModal = useCallback(() => {
+    onOpen('taskDetail', {taskId: item.id, actionType: 'view'})
+  }, [])
+
   return (
     <div
       className="flex min-h-[100px] w-full cursor-pointer 
@@ -22,6 +30,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       draggable
       onDragStart={() => onDragStart(item)}
       onDragEnd={onDragEnd}
+      onClick={openModal}
     >
       <p className="text-sm">{item.header}</p>
       <p className="text-xs text-[#cccccc]">{item.description}</p>
@@ -30,7 +39,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       </p>
       <p
         className={"text-xs text-[#5cd5fb]"}
-      >{`${item.executor.firstname} ${item.executor.lastname}`}</p>
+      >Исполнитель: {item.executor ? `${item.executor.firstname} ${item.executor.lastname}` : 'Не назначен'}</p>
     </div>
   );
 };

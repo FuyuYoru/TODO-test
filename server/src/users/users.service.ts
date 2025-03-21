@@ -46,6 +46,19 @@ export class UsersService {
         managerId: true,
         createdAt: true,
         updatedAt: true,
+        managedUsers: {
+          select: {
+            id: true,
+            login: true,
+            firstname: true,
+            lastname: true,
+            middlename: true,
+            role: true,
+            managerId: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
       },
     });
   }

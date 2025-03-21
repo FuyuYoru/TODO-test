@@ -1,26 +1,29 @@
-import { Task, TaskStatus } from "@/entities/tasks/model/task";
+import { columnStatuses, Task, TaskFilterType, TaskStatus } from "@/entities/tasks/model/task";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { useTasksStore } from "@/entities/tasks/store";
-import { useEffect, useMemo, useCallback, useState, useRef } from "react";
+import { useEffect, useMemo, useCallback, useRef, useState } from "react";
 import { TaskCard } from "@/entities/tasks/ui/TaskCard";
 import { Button } from "@/shared/ui/Button";
 import clsx from "clsx";
-
-const columnStatuses = [
-  { title: "Новые", value: TaskStatus.new, color: "#ffee95" },
-  { title: "Выполняются", value: TaskStatus.inProgress, color: "#47d1e2" },
-  { title: "Завершённые", value: TaskStatus.completed, color: "#75d900" },
-  { title: "Отменённые", value: TaskStatus.canceled, color: "#ff5752" },
-];
+import { useModal } from "@/features/modal/store";
 
 export const KanbanBoard: React.FC<{ filter: "my" | "team" }> = ({
   filter,
 }) => {
   const { user } = useAuth();
-  const { tasks, loadTasks, changeStatus } = useTasksStore();
+  const { tasks, loadTasks, changeTask } = useTasksStore();
+
+  const {onOpen} = useModal();
 
   const draggedTaskIdRef = useRef<number | null>(null);
   const dragoverColumnRef = useRef<TaskStatus | null>(null);
+  const [highlightedColumn, setHighlightedColumn] = useState<TaskStatus | null>(
+    null
+  );
+
+  const openModal = useCallback(() => {
+    onOpen('taskDetail', {actionType: 'create'})
+  }, [])
 
   const onDragStart = (task: Task) => {
     draggedTaskIdRef.current = task.id;
@@ -29,19 +32,27 @@ export const KanbanBoard: React.FC<{ filter: "my" | "team" }> = ({
   const onDragOver = (status: TaskStatus) => {
     if (draggedTaskIdRef.current) {
       dragoverColumnRef.current = status;
+      setHighlightedColumn(status);
     }
   };
 
-  const onDragEnd = () => {
+  const onDragEnd = async () => {
     if (draggedTaskIdRef.current && dragoverColumnRef.current) {
-      changeStatus(draggedTaskIdRef.current, dragoverColumnRef.current);
-      draggedTaskIdRef.current = null;
-      dragoverColumnRef.current = null;
+      await changeTask(draggedTaskIdRef.current, {status: dragoverColumnRef.current});
     }
+    draggedTaskIdRef.current = null;
+    dragoverColumnRef.current = null;
+    setHighlightedColumn(null);
   };
 
   const loadUserTasks = useCallback(() => {
-    if (user?.id) loadTasks({ userId: user.id });
+    if (user?.id) {
+      const filterType = filter === 'my'? TaskFilterType.ASSIGNED_TO_ME: TaskFilterType.CREATED_BY_ME
+      loadTasks({
+         userId: user.id,
+         filterType: filterType
+        })
+    };
   }, [user?.id, loadTasks]);
 
   useEffect(() => {
@@ -57,7 +68,10 @@ export const KanbanBoard: React.FC<{ filter: "my" | "team" }> = ({
           <div
             key={value}
             onDragOver={() => onDragOver(value)}
-            className={clsx("flex h-full w-full flex-col")}
+            className={clsx(
+              "flex h-full w-full flex-col",
+              highlightedColumn === value && "bg-[#444343] transition-colors"
+            )}
           >
             <div className="w-full">
               <div
@@ -86,14 +100,14 @@ export const KanbanBoard: React.FC<{ filter: "my" | "team" }> = ({
           </div>
         );
       }),
-    [tasks, columnStatuses]
+    [tasks, highlightedColumn]
   );
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full h-full flex flex-col gap-4">
       <div className="w-full flex flex-row">
         {filter === "team" && (
-          <Button classNames="bg-[#c20840] hover:bg-[#940740] transition px-4 py-2 rounded-xl">
+          <Button  classNames="bg-[#c20840] hover:bg-[#940740] transition px-4 py-2 rounded-xl" onClick={openModal}>
             Новая задача
           </Button>
         )}

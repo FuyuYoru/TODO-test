@@ -1,17 +1,16 @@
 import clsx from "clsx";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
-// Интерфейс для пропсов компонента
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;
   iconSide?: "start" | "end";
+  onClick: () => void;
   classNames?: string;
 }
 
-// Компонент Button с использованием forwardRef
 export const Button = forwardRef<HTMLDivElement, Props>(
   (
-    { icon = null, iconSide = "end", classNames = "", children, ...props },
+    { onClick, icon = null, iconSide = "end", classNames = "", children, ...props },
     ref
   ) => {
     return (
@@ -22,6 +21,7 @@ export const Button = forwardRef<HTMLDivElement, Props>(
           iconSide === "end" ? "flex-row" : "flex-row-reverse"
         )}
         ref={ref}
+        onClick={onClick}
       >
         <button
           {...props}

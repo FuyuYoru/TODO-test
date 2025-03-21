@@ -31,12 +31,25 @@ export enum TaskStatus {
 }
 
 export enum TaskPriority {
-  low = "low",
-  medium = "medium",
-  high = "high",
+  low = "Low",
+  medium = "Medium",
+  high = "High",
 }
 
 export enum TaskFilterType {
   ASSIGNED_TO_ME = "ASSIGNED_TO_ME",
   CREATED_BY_ME = "CREATED_BY_ME",
 }
+
+export const columnStatuses = [
+  { title: "Новые", value: TaskStatus.new, color: "#ffee95" },
+  { title: "Выполняются", value: TaskStatus.inProgress, color: "#47d1e2" },
+  { title: "Завершённые", value: TaskStatus.completed, color: "#75d900" },
+  { title: "Отменённые", value: TaskStatus.canceled, color: "#ff5752" },
+];
+
+export const priorityArray = [
+  { title: "Низкий", value: TaskPriority.low, color: "#ffee95" },
+  { title: "Обычный", value: TaskPriority.medium, color: "#47d1e2" },
+  { title: "Высокий", value: TaskPriority.high, color: "#75d900" },
+];

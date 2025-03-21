@@ -73,6 +73,17 @@ export class TasksService {
 
     const tasks = await this.prisma.task.findMany({
       where,
+      include: {
+        executor: {
+          select: {
+            id: true,
+            login: true,
+            firstname: true,
+            lastname: true,
+            middlename: true,
+          },
+        },
+      },
     });
 
     return tasks;
@@ -96,6 +107,17 @@ export class TasksService {
         ...rest,
         createdAt: new Date(),
       },
+      include: {
+        executor: {
+          select: {
+            id: true,
+            login: true,
+            firstname: true,
+            lastname: true,
+            middlename: true,
+          },
+        },
+      },
     });
   }
 
@@ -104,6 +126,17 @@ export class TasksService {
       return await this.prisma.task.update({
         where: { id: taskId },
         data: taskData,
+        include: {
+          executor: {
+            select: {
+              id: true,
+              login: true,
+              firstname: true,
+              lastname: true,
+              middlename: true,
+            },
+          },
+        },
       });
     } catch {
       throw new NotFoundException('Задача не найдена');
