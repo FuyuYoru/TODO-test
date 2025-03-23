@@ -9,33 +9,37 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTasksStore } from "@/entities/tasks/store";
+import { SubordinatesSelector } from "@/entities/user/ui/SubordinatesSelector";
 
 const taskSchema = z.object({
   header: z.string().min(3, "Заголовок слишком короткий"),
   description: z.string().optional(),
   status: z.nativeEnum(TaskStatus),
   priority: z.nativeEnum(TaskPriority),
+  executorId: z.number().optional(),
 });
 
 type TaskFormValues = z.infer<typeof taskSchema>;
 
-export const TaskModal: React.FC<{ taskId?: number; actionType: 'view' | 'create', onClose: () => void }> = ({
-  taskId,
-  actionType,
-  onClose,
-}) => {
+export const TaskModal: React.FC<{
+  taskId?: number;
+  actionType: "view" | "create";
+  onClose: () => void;
+}> = ({ taskId, actionType, onClose }) => {
   const { user } = useAuth();
 
-  const task = useTasksStore((state) => state.tasks.find((t) => t.id === taskId));
+  const task = useTasksStore((state) =>
+    state.tasks.find((t) => t.id === taskId)
+  );
 
   const canEdit = useMemo(() => {
-    if (actionType === 'create') {
+    if (actionType === "create") {
       return true;
     }
     return user?.id === task?.creatorId;
   }, [actionType, user, task]);
 
-  const [isEditing, setIsEditing] = useState(actionType === 'create');
+  const [isEditing, setIsEditing] = useState(actionType === "create");
   const [isLoading, setIsLoading] = useState(false);
   const { changeTask, createTask } = useTasksStore();
 
@@ -59,18 +63,18 @@ export const TaskModal: React.FC<{ taskId?: number; actionType: 'view' | 'create
     setIsLoading(true);
 
     try {
-      if (actionType === 'view') {
+      if (actionType === "view") {
         if (!task) return;
         await changeTask(task.id, data);
       }
-      if (actionType === 'create') {
-        console.log(actionType);
+      if (actionType === "create") {
+        console.log(data);
         await createTask({ ...data, creatorId: user.id });
       }
       setIsEditing(false);
     } finally {
       setIsLoading(false);
-      onClose()
+      onClose();
     }
   };
 
@@ -94,7 +98,10 @@ export const TaskModal: React.FC<{ taskId?: number; actionType: 'view' | 'create
         ) : (
           <p className="text-xl font-bold select-none">{task?.header}</p>
         )}
-        <div onClick={onClose} className="hover:bg-[#444343] rounded-full flex justify-center items-center">
+        <div
+          onClick={onClose}
+          className="hover:bg-[#444343] rounded-full flex justify-center items-center"
+        >
           <X size={30} color="#c20840" strokeWidth={0.75} />
         </div>
       </div>
@@ -105,52 +112,77 @@ export const TaskModal: React.FC<{ taskId?: number; actionType: 'view' | 'create
             {...register("description")}
             className="bg-transparent border border-gray-500 w-full h-24 rounded p-2 outline-none focus:border-white resize-none"
           />
-          {errors.header && <p className="text-red-500 text-sm">{errors.header.message}</p>}
+          {errors.header && (
+            <p className="text-red-500 text-sm">{errors.header.message}</p>
+          )}
         </>
       ) : (
         <p className="text-gray-300 mb-2">{task?.description}</p>
       )}
 
-      {task && (<div className="text-xs text-[#5cd5fb]">
-        <p>Создано: {new Date(task?.createdAt).toLocaleDateString()}</p>
-        {task.expiresAt && (
-          <p>Дедлайн: {new Date(task?.expiresAt).toLocaleDateString()}</p>
-        )}
-      </div>)}
+      {task && (
+        <div className="text-xs text-[#5cd5fb]">
+          <p>Создано: {new Date(task?.createdAt).toLocaleDateString()}</p>
+          {task.expiresAt && (
+            <p>Дедлайн: {new Date(task?.expiresAt).toLocaleDateString()}</p>
+          )}
+        </div>
+      )}
 
       <div className="flex gap-2 text-sm mb-4">
         {isEditing ? (
           <>
             <PrioritySelector
-              selectedPriority={getValues('priority')}
+              selectedPriority={getValues("priority")}
               onChange={(value) => setValue("priority", value)}
             />
             <StatusSelector
-              selectedStatus={getValues('status')}
+              selectedStatus={getValues("status")}
               onChange={(value) => {
-                setValue("status", value)
+                setValue("status", value);
               }}
             />
           </>
         ) : (
           <>
-            <span className="px-2 py-1 bg-gray-700 rounded">Приоритет: {task?.priority}</span>
-            <span className="px-2 py-1 bg-gray-700 rounded">Статус: {task?.status}</span>
+            <span className="px-2 py-1 bg-gray-700 rounded">
+              Приоритет: {task?.priority}
+            </span>
+            <span className="px-2 py-1 bg-gray-700 rounded">
+              Статус: {task?.status}
+            </span>
           </>
         )}
       </div>
 
       <div className="flex justify-between items-center">
-        <div className="text-sm text-gray-400">
-          Исполнитель: {task?.executor ? `${task.executor.firstname} ${task.executor.lastname}` : 'Не назначен'}
-        </div>
-        {canEdit && (
-          isEditing ? (
+        {isEditing ? (
+          <div className="flex flex-row">
+            Исполнитель:{" "}
+            <SubordinatesSelector
+              onChange={(value) => setValue("executorId", value[0])}
+              multiple={false}
+            />
+          </div>
+        ) : (
+          <div className="text-sm text-gray-400">
+            Исполнитель:{" "}
+            {task?.executor
+              ? `${task.executor.firstname} ${task.executor.lastname}`
+              : "Не назначен"}
+          </div>
+        )}
+        {canEdit &&
+          (isEditing ? (
             <Button
               classNames="border-[1px] border-[#c20840] min-w-[6rem] flex items-center justify-center hover:bg-[#c20840] rounded-xl py-1 px-2"
               onClick={handleSubmit(onSubmit)}
             >
-              {isLoading ? <Loader2 className="animate-spin" size={18} /> : "Сохранить"}
+              {isLoading ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                "Сохранить"
+              )}
             </Button>
           ) : (
             <Button
@@ -159,8 +191,7 @@ export const TaskModal: React.FC<{ taskId?: number; actionType: 'view' | 'create
             >
               Редактировать
             </Button>
-          )
-        )}
+          ))}
       </div>
     </div>
   );

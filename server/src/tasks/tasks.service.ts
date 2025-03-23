@@ -32,43 +32,39 @@ export class TasksService {
       executorId,
       executorIds,
     } = dto;
-
-    console.log(dto);
-
     const userId = Number(dto.userId);
 
     if (!userId) {
       throw new Error('User ID is required for filtering tasks.');
     }
+    const andConditions: Prisma.TaskWhereInput[] = [];
 
-    const orConditions: Prisma.TaskWhereInput[] = [];
-
+    // Фильтр по типу задачи (кем или кому)
     if (filterType === TaskFilterType.ASSIGNED_TO_ME) {
-      orConditions.push({ executorId: userId });
+      andConditions.push({ executorId: userId });
     } else if (filterType === TaskFilterType.CREATED_BY_ME) {
-      orConditions.push({ creatorId: userId });
+      andConditions.push({ creatorId: userId });
     }
 
-    if (executorIds && executorIds.length > 0) {
-      orConditions.push({ executorId: { in: executorIds } });
+    // Фильтр по исполнителям
+    if (executorIds?.length) {
+      andConditions.push({ executorId: { in: executorIds } });
     } else if (executorId) {
-      orConditions.push({ executorId });
+      andConditions.push({ executorId });
     }
 
-    if (
-      !filterType &&
-      !executorId &&
-      !(executorIds && executorIds.length > 0)
-    ) {
-      orConditions.push({ executorId: userId }, { creatorId: userId });
+    // Фильтр по дате
+    if (completedAfter || completedBefore) {
+      andConditions.push({
+        expiresAt: {
+          gte: completedAfter ? new Date(completedAfter) : undefined,
+          lte: completedBefore ? new Date(completedBefore) : undefined,
+        },
+      });
     }
 
     const where: Prisma.TaskWhereInput = {
-      OR: orConditions,
-      expiresAt: {
-        gte: completedAfter ? new Date(completedAfter) : undefined,
-        lte: completedBefore ? new Date(completedBefore) : undefined,
-      },
+      AND: andConditions,
     };
 
     const tasks = await this.prisma.task.findMany({
@@ -101,9 +97,10 @@ export class TasksService {
         throw new NotFoundException('Исполнитель не найден');
       }
     }
-
+    console.log(rest);
     return await this.prisma.task.create({
       data: {
+        executorId,
         ...rest,
         createdAt: new Date(),
       },

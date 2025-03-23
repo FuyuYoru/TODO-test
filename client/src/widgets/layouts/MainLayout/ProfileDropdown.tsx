@@ -1,12 +1,10 @@
 import { useAuth } from "@/app/providers/AuthProvider";
-import { useOutsideClick } from "@/shared/hooks/useOutsideClick";
 import { Button } from "@/shared/ui/Button";
+import { Dropdown } from "@/shared/ui/Dropdown";
 import { HorizontalSeparator } from "@/shared/ui/HorizontalSeparator";
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
-import { useRef, useState } from "react";
 
-// Компонент элемента списка
 const DropdownItem = ({
   title,
   onClick,
@@ -24,17 +22,7 @@ const DropdownItem = ({
 );
 
 export const ProfileDropdown: React.FC = () => {
-  const [isOpened, setIsOpened] = useState(false);
   const { user, signOut } = useAuth();
-  const buttonRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useOutsideClick((event) => {
-    if (buttonRef.current && buttonRef.current.contains(event.target as Node)) {
-      return;
-    }
-    setIsOpened(false);
-  });
-
-  const handleOpen = () => setIsOpened((prev) => !prev);
 
   const userActions = [
     {
@@ -52,59 +40,57 @@ export const ProfileDropdown: React.FC = () => {
     },
   ];
 
+  if (!user) return null;
+
   return (
     <div className="relative px-4">
-      <Button
-        icon={
-          <div
-            className={clsx(
-              "transition-transform duration-300",
-              isOpened && "rotate-180"
-            )}
+      <Dropdown
+        trigger={(isOpened) => (
+          <Button
+            icon={
+              <div
+                className={clsx(
+                  "transition-transform duration-300",
+                  isOpened && "rotate-180"
+                )}
+              >
+                <ChevronDown strokeWidth={1} />
+              </div>
+            }
+            classNames="gap-2 text-lg w-full"
+            onClick={console.log}
           >
-            <ChevronDown strokeWidth={1} />
-          </div>
-        }
-        onClick={handleOpen}
-        classNames="gap-2 text-lg"
-        ref={buttonRef}
-      >
-        {user?.firstname + " " + user?.lastname}
-      </Button>
-
-      <div
-        ref={dropdownRef}
-        className={clsx(
-          "absolute left-0 top-full mt-1 w-full transform rounded-md border border-[#2b2b2b] bg-[#181818] p-[1px] shadow-lg transition-all duration-300",
-          isOpened
-            ? "scale-100 opacity-100"
-            : "pointer-events-none scale-95 opacity-0"
+            {user?.firstname + " " + user?.lastname}
+          </Button>
         )}
+        classNames=""
       >
-        {userActions.map((item) => (
-          <DropdownItem
-            key={item.id}
-            title={item.title}
-            onClick={item.action}
-          />
-        ))}
+        <>
+          {userActions.map((item) => (
+            <DropdownItem
+              key={item.id}
+              title={item.title}
+              onClick={item.action}
+            />
+          ))}
 
-        {user?.role === "ADMIN" && (
-          <>
-            <HorizontalSeparator />
-            {adminActions.map((item) => (
-              <DropdownItem
-                key={item.id}
-                title={item.title}
-                onClick={item.action}
-              />
-            ))}
-          </>
-        )}
+          {user?.role === "ADMIN" && (
+            <>
+              <HorizontalSeparator />
+              {adminActions.map((item) => (
+                <DropdownItem
+                  key={item.id}
+                  title={item.title}
+                  onClick={item.action}
+                />
+              ))}
+            </>
+          )}
 
-        <HorizontalSeparator />
-        <DropdownItem title="Выйти" onClick={signOut} />
-      </div>
+          <HorizontalSeparator />
+          <DropdownItem title="Выйти" onClick={signOut} />
+        </>
+      </Dropdown>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import { Button } from "@/shared/ui/Button";
 import clsx from "clsx";
 import { useModal } from "@/features/modal/store";
 import { KanbanDateFilter } from "./KanbanDateFilter";
+import { SubordinatesSelector } from "@/entities/user/ui/SubordinatesSelector";
 
 export const KanbanBoard: React.FC<{ filter: "my" | "team" }> = ({
   filter,
@@ -19,6 +20,7 @@ export const KanbanBoard: React.FC<{ filter: "my" | "team" }> = ({
   const { user } = useAuth();
   const { tasks, loadTasks, changeTask } = useTasksStore();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedManagers, setSelectedManagers] = useState<number[]>([]);
 
   const { onOpen } = useModal();
 
@@ -60,13 +62,15 @@ export const KanbanBoard: React.FC<{ filter: "my" | "team" }> = ({
         filter === "my"
           ? TaskFilterType.ASSIGNED_TO_ME
           : TaskFilterType.CREATED_BY_ME;
+
       loadTasks({
         userId: user.id,
         filterType: filterType,
         completedBefore: selectedDate,
+        executorIds: selectedManagers,
       });
     }
-  }, [user?.id, loadTasks, selectedDate]);
+  }, [user?.id, loadTasks, selectedDate, selectedManagers]);
 
   useEffect(() => {
     loadUserTasks();
@@ -118,15 +122,20 @@ export const KanbanBoard: React.FC<{ filter: "my" | "team" }> = ({
 
   return (
     <div className="w-full h-full flex flex-col gap-4">
-      <div className="w-full flex flex-row justify-between">
+      <div className="w-full flex flex-col sm:flex-row justify-between gap-4">
         <KanbanDateFilter onChange={(value) => setSelectedDate(value)} />
         {filter === "team" && (
-          <Button
-            classNames="bg-[#c20840] hover:bg-[#940740] transition px-4 py-2 rounded-xl"
-            onClick={openModal}
-          >
-            Новая задача
-          </Button>
+          <>
+            <SubordinatesSelector
+              onChange={(value) => setSelectedManagers(value)}
+            />
+            <Button
+              classNames="bg-[#c20840] hover:bg-[#940740] transition px-4 py-2 rounded-xl"
+              onClick={openModal}
+            >
+              Новая задача
+            </Button>
+          </>
         )}
       </div>
       <div className="grid h-full grid-cols-4">{columns}</div>
