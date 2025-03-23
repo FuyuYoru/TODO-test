@@ -18,7 +18,7 @@ export interface TaskFilter {
   userId: number;
   filterType?: TaskFilterType;
   completedAfter?: string;
-  completedBefore?: string;
+  completedBefore?: string | null;
   executorId?: number;
   executorIds?: number[];
 }

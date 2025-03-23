@@ -7,7 +7,7 @@ async function main() {
   await prisma.task.deleteMany({});
   await prisma.user.deleteMany({});
 
-	const pass = await bcrypt.hash('Ewqaz1234', 10);
+  const pass = await bcrypt.hash('Ewqaz1234', 10);
 
   const admin = await prisma.user.create({
     data: {
@@ -60,6 +60,33 @@ async function main() {
         executorId: subordinate1.id,
         priority: 'High',
         status: 'InProgress',
+      },
+      {
+        header: 'Задача 3 для Тестового 1',
+        description: 'Задача 3 для Тестового 1.',
+        creatorId: admin.id,
+        executorId: subordinate1.id,
+        priority: 'High',
+        status: 'InProgress',
+        expiresAt: new Date('2025-03-23').toISOString(),
+      },
+      {
+        header: 'Задача 4 для Тестового 1',
+        description: 'Задача 4 для Тестового 1.',
+        creatorId: admin.id,
+        executorId: subordinate1.id,
+        priority: 'High',
+        status: 'InProgress',
+        expiresAt: new Date('2025-03-24').toISOString(),
+      },
+      {
+        header: 'Задача 5 для Тестового 1',
+        description: 'Задача 5 для Тестового 1.',
+        creatorId: admin.id,
+        executorId: subordinate1.id,
+        priority: 'High',
+        status: 'InProgress',
+        expiresAt: new Date('2025-03-31').toISOString(),
       },
     ],
   });

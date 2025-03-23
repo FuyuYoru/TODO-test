@@ -16,7 +16,7 @@ export const AppRouter = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Providers />}>
+        <Route element={<Providers />}>
           <Route element={<PublicRoute />}>
             <Route path="/login" element={<LoginPage />}></Route>
             <Route path="/register/:id" element={<RegisterPage />}></Route>
@@ -27,8 +27,8 @@ export const AppRouter = () => {
               <Route path="/tasks" element={<TaskPage />} />
             </Route>
           </Route>
+          <Route path="*" element={<Navigate to="/tasks" />} />
         </Route>
-        <Route path="*" element={<Navigate to="/tasks" />} />
       </Routes>
     </Router>
   );
