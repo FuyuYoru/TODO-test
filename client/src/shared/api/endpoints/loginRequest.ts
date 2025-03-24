@@ -16,18 +16,23 @@ export const loginRequest = async (
     password,
   });
 
-  const response = await fetch(`${baseUrl}${ApiPaths.login()}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body,
-    credentials: "include",
-  });
-
-  if (!response.ok) {
+  try {
+    const response = await fetch(`${baseUrl}${ApiPaths.login()}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body,
+      credentials: "include",
+    });
+  
+    if (!response.ok) {
+      console.log(response.status)
+      throw new Error("Неверный логин/пароль");
+    }
+  
+    return response.json();
+  } catch { 
     throw new Error("Ошибка авторизации");
   }
-
-  return response.json();
 };

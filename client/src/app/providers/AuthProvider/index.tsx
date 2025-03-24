@@ -68,9 +68,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setAuthError(null);
       return null;
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Неизвестная ошибка";
       setIsAuthenticated(false);
-      setAuthError("Неверный логин или пароль");
-      return "Неверный логин или пароль";
+      setAuthError(errorMessage);
+      return errorMessage;
     }
   }, []);
 
