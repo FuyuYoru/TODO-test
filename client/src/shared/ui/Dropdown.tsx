@@ -37,7 +37,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
       <div
         ref={dropdownRef}
         className={clsx(
-          "absolute left-0 top-full mt-1 w-full rounded-md border border-[#2b2b2b] bg-[#181818] p-[1px] shadow-lg transition-all duration-300",
+          "absolute z-10 left-0 top-full mt-1 w-full rounded-md border border-[#2b2b2b] bg-[#181818] p-[1px] shadow-lg transition-all duration-300",
           isOpened
             ? "scale-100 opacity-100"
             : "pointer-events-none scale-95 opacity-0",

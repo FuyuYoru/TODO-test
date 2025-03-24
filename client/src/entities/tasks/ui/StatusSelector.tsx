@@ -1,6 +1,6 @@
 import { columnStatuses, TaskStatus } from "@/entities/tasks/model/task";
-import { useOutsideClick } from "@/shared/hooks/useOutsideClick";
 import { Button } from "@/shared/ui/Button";
+import { Dropdown } from "@/shared/ui/Dropdown";
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
@@ -30,21 +30,12 @@ export const StatusSelector: React.FC<StatusSelectorProps> = ({
   selectedStatus,
   onChange,
 }) => {
-  const [isOpened, setIsOpened] = useState(false);
   const buttonRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useOutsideClick((event) => {
-    if (buttonRef.current && buttonRef.current.contains(event.target as Node)) {
-      return;
-    }
-    setIsOpened(false);
-  });
   const [localValue, setLocalValue] = useState(selectedStatus);
 
-  const handleOpen = () => setIsOpened((prev) => !prev);
 
   const changeState = (state: TaskStatus) => {
     onChange(state);
-    setIsOpened(false);
     setLocalValue(state);
   };
 
@@ -55,36 +46,32 @@ export const StatusSelector: React.FC<StatusSelectorProps> = ({
   }, [localValue]);
 
   return (
-    <div className="relative px-4">
-      <div className="flex flex-row">
-        <span className="text-lg">Статус: </span>
-        <Button
-          icon={
-            <div
-              className={clsx(
-                "transition-transform duration-300",
-                isOpened && "rotate-180"
-              )}
-            >
-              <ChevronDown strokeWidth={1} />
+    <div className="relative px-4 w-full">
+      <Dropdown
+        trigger={
+          (isOpened) => (
+            <div className="flex flex-row">
+              <span className="text-lg">Статус: </span>
+              <Button
+                icon={
+                  <div
+                    className={clsx(
+                      "transition-transform duration-300",
+                      isOpened && "rotate-180"
+                    )}
+                  >
+                    <ChevronDown strokeWidth={1} />
+                  </div>
+                }
+                onClick={() => null}
+                classNames="gap-2 text-lg"
+                ref={buttonRef}
+              >
+                {statusTitle}
+              </Button>
             </div>
-          }
-          onClick={handleOpen}
-          classNames="gap-2 text-lg"
-          ref={buttonRef}
-        >
-          {statusTitle}
-        </Button>
-      </div>
-
-      <div
-        ref={dropdownRef}
-        className={clsx(
-          "absolute left-0 top-full mt-1 w-full transform rounded-md border border-[#2b2b2b] bg-[#181818] p-[1px] shadow-lg transition-all duration-300",
-          isOpened
-            ? "scale-100 opacity-100"
-            : "pointer-events-none scale-95 opacity-0"
-        )}
+          )
+        }
       >
         {columnStatuses.map((item) => (
           <DropdownItem
@@ -93,7 +80,7 @@ export const StatusSelector: React.FC<StatusSelectorProps> = ({
             key={item.value}
           />
         ))}
-      </div>
+      </Dropdown>
     </div>
   );
 };
